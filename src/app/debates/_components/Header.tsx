@@ -14,7 +14,7 @@ export default function Header() {
           <h1 className="text-xl font-bold text-foreground">YouthDebate</h1>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-4">
           <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
             Home
           </a>
@@ -33,7 +33,7 @@ export default function Header() {
           <Button size="sm">Join Now</Button>
           <Button size="sm" asChild>
             <a href="/debates/create">
-              <Plus className="w-4 h-4 mr-1" />
+              {/* <Plus className="w-4 h-4 mr-1" /> */}
               Create Debate
             </a>
           </Button>
