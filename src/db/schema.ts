@@ -8,14 +8,67 @@ export const debateRole = pgEnum("debate_role", ["moderator", "debater", "watche
 export const debaterStatus = pgEnum("debater_status", ["ready", "not_ready", "error"]);
 export const topics= pgEnum("debate_categories", ["freedom", "privacy", "education","climate", "health", "equality", "economy","technology", "other"])
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified")
+    .$defaultFn(() => false)
+    .notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });
 
-export const debate = pgTable("debates", {
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+});
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+});
+
+export const debate = pgTable("debate", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
@@ -26,28 +79,32 @@ export const debate = pgTable("debates", {
   debateDate: timestamp("debate_date").notNull(),
   guidelines: text('guidelines'),
   sides: jsonb("sides").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
-  createdBy: uuid("created_by").references(() => users.id),
+  createdBy: text("created_by").references(() => user.id, { onDelete: "cascade" }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-export const debateParticipant = pgTable("debate_participants", {
+export const debateParticipant = pgTable("debate_participant", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
   role: debateRole("role").notNull(),
   status: debaterStatus().default("not_ready"),
   side: text(), 
 });
 
-export const debaterApplication = pgTable("debater_applications", {
+export const debaterApplication = pgTable("debater_application", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
   status: applicationStatus("status").default("pending").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-export const debateSummary = pgTable("debate_summaries", {
+export const debateSummary = pgTable("debate_summary", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
   summary: text("summary").notNull(),
@@ -65,14 +122,18 @@ export const pollVote = pgTable("poll_vote", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   pollId: uuid("poll_id").references(() => poll.id).notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   side: varchar("side").notNull(),
 });
 
 export const question = pgTable("question", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   status: questionStatus("status").default("pending").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -81,7 +142,9 @@ export const question = pgTable("question", {
 export const watcherChat = pgTable("watcher_chat", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
@@ -89,14 +152,21 @@ export const watcherChat = pgTable("watcher_chat", {
 export const debaterChat = pgTable("debater_chat", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-export const bookmark = pgTable("bookmarks", {
+export const bookmark = pgTable("bookmark", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
+
+
+export const schema = {user, session, account, verification}
