@@ -27,7 +27,7 @@ export default function CreateDebateClient() {
       maxDebaters: "2",
       format: "oxford",
       rules: "",
-      tags: "",
+      sides: [],
     },
   });
 
