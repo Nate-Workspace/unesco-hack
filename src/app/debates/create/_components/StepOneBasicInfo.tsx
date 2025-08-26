@@ -5,8 +5,31 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form"
+import { Button } from "@/components/ui/button"
+import { topics } from "@/constants/topics"
+import { Plus, Trash } from "lucide-react"
 
-export default function StepOneBasicInfo({ form, topics, formats }: any) {
+export default function StepOneBasicInfo({ form }: any) {
+
+  const sides = form.watch("sides") || []
+
+  const addSide = () => {
+    if (sides.length < 3) {
+      form.setValue("sides", [...sides, ""])
+    }
+  }
+
+  const removeSide = (index: number) => {
+    const updated = sides.filter((_: any, i: number) => i !== index)
+    form.setValue("sides", updated)
+  }
+
+  const updateSide = (index: number, value: string) => {
+    const updated = [...sides]
+    updated[index] = value
+    form.setValue("sides", updated)
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -89,36 +112,40 @@ export default function StepOneBasicInfo({ form, topics, formats }: any) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="format"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Debate Format</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select debate format" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {formats?.map((format: any) => (
-                    <SelectItem key={format.value} value={format.value}>
-                      <div>
-                        <div className="font-medium">{format.label}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {format.description}
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>Choose the structure and style for your debate</FormDescription>
-              <FormMessage />
-            </FormItem>
+        <div className="space-y-3">
+          <FormLabel>Debate Sides</FormLabel>
+          <FormDescription>
+            Define the perspectives or stances for this debate (up to 3).
+          </FormDescription>
+
+          <div className="space-y-2">
+            {sides.map((side: string, index: number) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Input
+                  value={side}
+                  onChange={(e) => updateSide(index, e.target.value)}
+                  placeholder={`Side ${index + 1}`}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeSide(index)}
+                >
+                  <Trash className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          {sides.length < 3 && (
+            <Button type="button" variant="outline" onClick={addSide} className="mt-2">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Side
+            </Button>
           )}
-        />
+        </div>
       </CardContent>
     </Card>
   )

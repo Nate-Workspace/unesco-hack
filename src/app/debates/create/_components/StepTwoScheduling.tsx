@@ -138,26 +138,6 @@ export default function StepTwoScheduling({ form }: any) {
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name="tags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g., social media, censorship, free speech (comma separated)"
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>
-                Add relevant tags to help people find your debate
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
       </CardContent>
     </Card>
   )
