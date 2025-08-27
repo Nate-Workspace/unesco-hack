@@ -12,7 +12,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { DebateSchema, DebateFormData } from "@/lib/validation/debate";
-import { createDebateAction } from "../actions";
+import { createDebateAction } from "../_actions/debates.mutation.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CreateDebateClient() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -28,11 +30,10 @@ export default function CreateDebateClient() {
       time: "",
       duration: "60",
       applicationDeadline: "",
-      maxDebaters: "2",
-      format: "oxford",
-      rules: "",
+      rules: undefined, 
       sides: [],
     },
+    shouldUnregister: false,
   });
 
   const watchedValues = form.watch();

@@ -26,5 +26,4 @@ export async function createDebateAction(formData: DebateFormData) {
   createdBy: "D7HTkMMECZQBgO24f7FGg7H0T52yVQT6",       // must exist in user table
   createdAt: new Date(),
 });
-
 }

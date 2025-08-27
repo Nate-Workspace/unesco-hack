@@ -3,25 +3,14 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { AlertCircle } from "lucide-react";
+import { DebateFormData } from "@/lib/validation/debate";
 
-// type for watchedValues from react-hook-form
 interface StepThreeReviewProps {
   form: any;
-  watchedValues: {
-    title: string;
-    description: string;
-    topic: string;
-    format: string;
-    date: string;
-    time: string;
-    duration: string;
-    maxDebaters: string;
-    rules: string;
-  };
+  watchedValues: DebateFormData;
 }
 
 export default function StepThreeReview({ watchedValues }: StepThreeReviewProps) {
-  // mapping for labels (moved here so the component is self-contained)
   const topics = [
     { value: "freedom", label: "Freedom of Expression" },
     { value: "privacy", label: "Privacy Rights" },
@@ -68,10 +57,6 @@ export default function StepThreeReview({ watchedValues }: StepThreeReviewProps)
               {topics.find((t) => t.value === watchedValues.topic)?.label || "Not selected"}
             </div>
             <div>
-              <span className="font-medium">Format:</span>{" "}
-              {formats.find((f) => f.value === watchedValues.format)?.label || "Not selected"}
-            </div>
-            <div>
               <span className="font-medium">Date:</span>{" "}
               {watchedValues.date ? new Date(watchedValues.date).toLocaleDateString() : "Not set"}
             </div>
@@ -80,9 +65,6 @@ export default function StepThreeReview({ watchedValues }: StepThreeReviewProps)
             </div>
             <div>
               <span className="font-medium">Duration:</span> {watchedValues.duration} minutes
-            </div>
-            <div>
-              <span className="font-medium">Debaters:</span> {watchedValues.maxDebaters} per side
             </div>
           </div>
 

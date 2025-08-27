@@ -74,31 +74,6 @@ export default function StepTwoScheduling({ form }: any) {
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="maxDebaters"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Debaters per Side</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="1">1 debater per side</SelectItem>
-                    <SelectItem value="2">2 debaters per side</SelectItem>
-                    <SelectItem value="3">3 debaters per side</SelectItem>
-                    <SelectItem value="4">4 debaters per side</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>Maximum participants per position</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         <FormField
