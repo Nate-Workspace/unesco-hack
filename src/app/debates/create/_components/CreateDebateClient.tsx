@@ -12,13 +12,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { DebateSchema, DebateFormData } from "@/lib/validation/debate";
-import { createDebateAction } from "../actions";
+import { createDebateAction } from "../_actions/debates.mutation.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CreateDebateClient() {
   const [currentStep, setCurrentStep] = useState(1);
   const [previewMode, setPreviewMode] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   const form = useForm<DebateFormData>({
     resolver: zodResolver(DebateSchema),
@@ -30,32 +31,30 @@ export default function CreateDebateClient() {
       time: "",
       duration: "60",
       applicationDeadline: "",
-      maxDebaters: "2",
-      format: "oxford",
-      rules: "",
+      rules: undefined, 
       sides: [],
     },
+    shouldUnregister: false,
   });
 
   const watchedValues = form.watch();
 
   const onSubmit = async (data: DebateFormData) => {
-    setSubmitError(null);
-    setSubmitSuccess(null);
-
-    // Check client-side errors
-    if (Object.keys(form.formState.errors).length > 0) {
-      setSubmitError("Please fill all the necessary information correctly.");
-      return;
-    }
-
-    try {
-      await createDebateAction(data);
-      setSubmitSuccess("Debate created successfully!");
+      const { errors, id } = await createDebateAction(data);
       form.reset();
-    } catch (err: any) {
-      setSubmitError("Error creating debate: " + err.message);
-    }
+
+      if (errors && errors === 'duplicate') {
+        console.log('Error', 'This Debate code already exists');
+        toast.error('Error: This Debate code already exists');
+      }
+      if (errors) {
+        console.log('Error desc: ', errors);
+        toast.error('Error: Creating failed');
+      }
+      if (id) {
+        toast.success("Success: Debate created successfully!")
+        router.push('/debates');
+      }
   };
 
   if (previewMode) {
@@ -71,16 +70,15 @@ export default function CreateDebateClient() {
           <div className="max-w-4xl mx-auto">
             <Form {...form}>
               <form id="debate-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {submitError && (
-                  <div className="p-3 text-red-700 bg-red-100 rounded">{submitError}</div>
-                )}
-                {submitSuccess && (
-                  <div className="p-3 text-green-700 bg-green-100 rounded">{submitSuccess}</div>
+                {Object.keys(form.formState.errors).length > 0 && (
+                  <div className="p-3 text-red-700 bg-red-100 rounded">Fill out every required field correctly!</div>
                 )}
 
                 {currentStep === 1 && <StepOneBasicInfo form={form} />}
                 {currentStep === 2 && <StepTwoScheduling form={form} />}
-                {currentStep === 3 && <StepThreeReview form={form} watchedValues={watchedValues} />}
+                {currentStep === 3 && (
+                  <StepThreeReview form={form} watchedValues={watchedValues} />
+                )}
 
                 <Navigation currentStep={currentStep} setCurrentStep={setCurrentStep} form={form} />
               </form>
