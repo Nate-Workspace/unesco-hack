@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 export default function CreateDebateClient() {
   const [currentStep, setCurrentStep] = useState(1);
   const [previewMode, setPreviewMode] = useState(false);
+  const router = useRouter();
 
   const form = useForm<DebateFormData>({
     resolver: zodResolver(DebateSchema),
@@ -39,13 +40,21 @@ export default function CreateDebateClient() {
   const watchedValues = form.watch();
 
   const onSubmit = async (data: DebateFormData) => {
-    try {
-      await createDebateAction(data);
-      alert("Debate created successfully!");
+      const { errors, id } = await createDebateAction(data);
       form.reset();
-    } catch (err: any) {
-      alert("Error creating debate: " + err.message);
-    }
+
+      if (errors && errors === 'duplicate') {
+        console.log('Error', 'This Debate code already exists');
+        toast.error('Error: This Debate code already exists');
+      }
+      if (errors) {
+        console.log('Error desc: ', errors);
+        toast.error('Error: Creating failed');
+      }
+      if (id) {
+        toast.success("Success: Debate created successfully!")
+        router.push('/debates');
+      }
   };
 
   if (previewMode) {
@@ -60,9 +69,17 @@ export default function CreateDebateClient() {
           <div className="max-w-4xl mx-auto">
             <Form {...form}>
               <form id="debate-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
+                {Object.keys(form.formState.errors).length > 0 && (
+                  <div className="p-3 text-red-700 bg-red-100 rounded">Fill out every required field correctly!</div>
+                )}
+
                 {currentStep === 1 && <StepOneBasicInfo form={form} />}
                 {currentStep === 2 && <StepTwoScheduling form={form} />}
-                {currentStep === 3 && <StepThreeReview form={form} watchedValues={watchedValues} />}
+                {currentStep === 3 && (
+                  <StepThreeReview form={form} watchedValues={watchedValues} />
+                )}
+
                 <Navigation currentStep={currentStep} setCurrentStep={setCurrentStep} form={form} />
               </form>
             </Form>

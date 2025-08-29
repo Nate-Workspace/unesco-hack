@@ -86,7 +86,37 @@ import { getDebates } from "./debates/actions";
               {liveDebates.length} Active
             </Badge>
           </div>
-
+          <CardTitle className="text-lg font-sans">Freedom of Expression in Digital Age</CardTitle>
+          <CardDescription className="font-serif">
+            Should social media platforms have the right to moderate content?
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex -space-x-2">
+              <Avatar className="w-8 h-8 border-2 border-background">
+                <AvatarImage src="/young-debater-1.png" />
+                <AvatarFallback>A1</AvatarFallback>
+              </Avatar>
+              <Avatar className="w-8 h-8 border-2 border-background">
+                <AvatarImage src="/young-debater-2.png" />
+                <AvatarFallback>B1</AvatarFallback>
+              </Avatar>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button size="sm" variant="ghost">
+                <MessageSquare className="w-4 h-4 mr-1" />
+                Ask
+              </Button>
+              <Button size="sm" variant="ghost">
+                <Vote className="w-4 h-4 mr-1" />
+                Poll
+              </Button>
+            </div>
+          </div>
+          <Button className="w-full">Join Discussion</Button>
+        </CardContent>
+      </Card>
 
           <div className="flex gap-6 overflow-x-auto py-4 scroll-smooth scroll-container">
             {liveDebates.map(debate => (
@@ -103,7 +133,56 @@ import { getDebates } from "./debates/actions";
             ))}
           </div>
         </div>
-      </section>
+        <Button className="w-full">Join Discussion</Button>
+      </CardContent>
+    </Card>
+
+    {/* Card 6 */}
+    <Card className="min-w-[300px] border-accent/20 shadow-lg hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <Badge className="bg-red-500 text-white">LIVE</Badge>
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Users className="w-4 h-4 mr-1" />
+            95 watching
+          </div>
+        </div>
+        <CardTitle className="text-lg font-sans">Youth Engagement in Politics</CardTitle>
+        <CardDescription className="font-serif">
+          How can young people actively participate in shaping government policies?
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex -space-x-2">
+            <Avatar className="w-8 h-8 border-2 border-background">
+              <AvatarImage src="/youth-politics.png" />
+              <AvatarFallback>G1</AvatarFallback>
+            </Avatar>
+            <Avatar className="w-8 h-8 border-2 border-background">
+              <AvatarImage src="/placeholder-5vg2g.png" />
+              <AvatarFallback>P4</AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button size="sm" variant="ghost">
+              <MessageSquare className="w-4 h-4 mr-1" />
+              Ask
+            </Button>
+            <Button size="sm" variant="ghost">
+              <Vote className="w-4 h-4 mr-1" />
+              Poll
+            </Button>
+          </div>
+        </div>
+        <Button className="w-full">Join Discussion</Button>
+      </CardContent>
+    </Card>
+  </div>
+</div>
+</section>
+
+
 
       {/* Upcoming Debates Section */}
       <section className="py-16 bg-card/30">
