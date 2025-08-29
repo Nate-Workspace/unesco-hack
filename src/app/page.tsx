@@ -77,12 +77,16 @@ import { getDebates } from "./debates/actions";
       {/* Live Debates Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-3xl font-bold text-foreground font-sans">Live Now</h3>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-foreground flex items-center font-sans">
+              <div className="w-3 h-3 bg-red-500 rounded-full mr-3 animate-pulse"></div>
+              Live Debates
+            </h3>
             <Badge variant="secondary" className="bg-accent text-accent-foreground animate-pulse">
-              {liveDebates.length} Active Debates
+              {liveDebates.length} Active
             </Badge>
           </div>
+
 
           <div className="flex gap-6 overflow-x-auto py-4 scroll-smooth scroll-container">
             {liveDebates.map(debate => (
