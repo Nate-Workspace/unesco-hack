@@ -64,12 +64,12 @@ export default function CreateDebateClient() {
   return (
     <>
       <PageHeader currentStep={currentStep} setPreviewMode={setPreviewMode} />
-
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <Form {...form}>
               <form id="debate-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+
                 {Object.keys(form.formState.errors).length > 0 && (
                   <div className="p-3 text-red-700 bg-red-100 rounded">Fill out every required field correctly!</div>
                 )}
