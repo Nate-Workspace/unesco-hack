@@ -1,5 +1,5 @@
 import { pgTable, serial, varchar, text, integer, jsonb, timestamp, pgEnum, boolean, uuid, primaryKey } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const debateStatus = pgEnum("debate_status", ["upcoming", "ongoing", "past"]);
 export const applicationStatus = pgEnum("application_status", ["pending", "approved", "rejected"]);
@@ -161,4 +161,127 @@ export const bookmark = pgTable("bookmark", {
 });
 
 
-export const schema = {user, session, account, verification}
+//Added table relations 
+export const userRelations = relations(user, ({ many }) => ({
+  debateParticipants: many(debateParticipant),
+  bookmarks: many(bookmark),
+}));
+
+export const debateRelations = relations(debate, ({ many, one }) => ({
+  debateParticipants: many(debateParticipant),
+  bookmarks: many(bookmark),
+  createdBy: one(user, {
+    fields: [debate.createdBy],
+    references: [user.id]
+  }),
+}));
+
+export const debateParticipantRelations = relations(debateParticipant, ({ one }) => ({
+  user: one(user, {
+    fields: [debateParticipant.userId],
+    references: [user.id],
+  }),
+  debate: one(debate, {
+    fields: [debateParticipant.debateId],
+    references: [debate.id],
+  }),
+}));
+
+export const bookmarkRelations = relations(bookmark, ({ one }) => ({
+  user: one(user, {
+    fields: [bookmark.userId],
+    references: [user.id],
+  }),
+  debate: one(debate, {
+    fields: [bookmark.debateId],
+    references: [debate.id],
+  }),
+}));
+
+export const debaterApplicationRelations = relations(debaterApplication, ({ one }) => ({
+  user: one(user, {
+    fields: [debaterApplication.userId],
+    references: [user.id]
+  }),
+  debate: one(debate, {
+    fields: [debaterApplication.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const pollVoteRelations = relations(pollVote, ({ one }) => ({
+  user: one(user, {
+    fields: [pollVote.userId],
+    references: [user.id]
+  }),
+  debate: one(debate, {
+    fields: [pollVote.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const questionRelations = relations(question, ({ one }) => ({
+  user: one(user, {
+    fields: [question.userId],
+    references: [user.id]
+  }),
+  debate: one(debate, {
+    fields: [question.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const watcherChatRelations = relations(watcherChat, ({ one }) => ({
+  user: one(user, {
+    fields: [watcherChat.userId],
+    references: [user.id]
+  }),
+  debate: one(debate, {
+    fields: [watcherChat.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const debaterChatRelations = relations(debaterChat, ({ one }) => ({
+  user: one(user, {
+    fields: [debaterChat.userId],
+    references: [user.id]
+  }),
+  debate: one(debate, {
+    fields: [debaterChat.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const debateSummaryRelations = relations(debateSummary, ({ one }) => ({
+  debate: one(debate, {
+    fields: [debateSummary.debateId],
+    references: [debate.id]
+  }),
+}));
+
+export const schema = {
+  user,
+  session,
+  account,
+  verification,
+  debate,
+  debateParticipant,
+  debaterApplication,
+  debateSummary,
+  pollVote,
+  question,
+  watcherChat,
+  debaterChat,
+  bookmark,
+  userRelations,
+  debateRelations,
+  debateParticipantRelations,
+  debaterApplicationRelations,
+  debateSummaryRelations,
+  pollVoteRelations,
+  questionRelations,
+  watcherChatRelations,
+  debaterChatRelations,
+  bookmarkRelations,
+};
