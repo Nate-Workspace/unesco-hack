@@ -111,16 +111,8 @@ export const debateSummary = pgTable("debate_summary", {
   createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-export const poll = pgTable("poll", {
-  id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-  debateId: uuid("debate_id").references(() => debate.id).notNull(),
-  type: varchar("type").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-});
-
 export const pollVote = pgTable("poll_vote", {
   id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-  pollId: uuid("poll_id").references(() => poll.id).notNull(),
   debateId: uuid("debate_id").references(() => debate.id).notNull(),
   userId: text("user_id")
     .notNull()

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { DebateSchema } from "@/lib/validation/debate"; // import schema
 import { createDebate } from '@/db/orm/debate/create-debate';
+import { createPollResponse } from '@/db/orm/poll/create-poll-response';
 
 const BASE_URL = '/debates';
 
@@ -35,4 +36,8 @@ export async function createDebateAction(formData: any) {
     }
     return { errors: 'Failed to create Debate' };
 }
+}
+
+export async function createPollResponseAction({debateId, side, userId}: {debateId: string, side: string, userId: string}) {
+  await createPollResponse({debateId, side, userId})
 }

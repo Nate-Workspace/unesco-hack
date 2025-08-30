@@ -4,7 +4,6 @@ import { DebateDetails } from "@/types/debate.types"
 import { eq, sql } from "drizzle-orm"
 
 export const getDebateDetails = async (id: string): Promise<DebateDetails | null> => {
-  //You can copy this code to join page by just changing the database and the attributes you select
   const [debateData] = await db
     .select({
       id: debate.id,
