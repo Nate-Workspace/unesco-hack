@@ -15,7 +15,7 @@ interface UpcomingDebate {
   applicationsOpen: boolean;
   interested: number;
   icon: string;
-//   icon: keyof typeof Icons;
+  upcoming: boolean;
 }
 
 export default function UpcomingDebatesSection({ upcomingDebates }: { upcomingDebates: UpcomingDebate[] }) {
@@ -27,10 +27,11 @@ export default function UpcomingDebatesSection({ upcomingDebates }: { upcomingDe
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {upcomingDebates.map((debate) => {
-        //   const Icon = Icons[debate.icon];
+        {upcomingDebates.map((debate, index) => {
+          // Use a combination of a unique identifier and the index as a fallback
+          const key = debate.id || debate.title + index;
           return (
-            <Card key={debate.id} className="hover:shadow-lg transition-all duration-300">
+            <Card key={key} className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <Badge variant="outline" className="bg-accent/10">{debate.date}</Badge>
@@ -42,7 +43,6 @@ export default function UpcomingDebatesSection({ upcomingDebates }: { upcomingDe
                   </div>
                 </div>
                 <CardTitle className="font-sans flex items-center">
-                  {/* {Icon && <Icon className="w-4 h-4 mr-2 text-primary" />} */}
                   {debate.title}
                 </CardTitle>
                 <CardDescription className="font-serif">{debate.description}</CardDescription>
