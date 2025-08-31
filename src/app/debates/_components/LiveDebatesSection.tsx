@@ -7,16 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Users, MessageSquare, Vote, Bookmark, Play, Eye } from "lucide-react";
 import * as Icons from "lucide-react";
 
-interface LiveDebate {
-  id: number;
-  title: string;
-  description: string;
-  watchers: number;
-  avatars: string[];
-  icon: string;
-//   icon: keyof typeof Icons;
-}
+// interface LiveDebate {
+//   id: number;
+//   title: string;
+//   description: string;
+//   watchers: number;
+//   avatars: string[];
+//   icon: string;
+// //   icon: keyof typeof Icons;
+// }
 
+import type { LiveDebate } from "@/types/debates";
+
+interface LiveDebatesSectionProps {
+  liveDebates: LiveDebate[];
+}
 export default function LiveDebatesSection({ liveDebates }: { liveDebates: LiveDebate[] }) {
   return (
     <div className="mb-12">
